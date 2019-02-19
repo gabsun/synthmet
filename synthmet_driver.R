@@ -7,12 +7,12 @@
 # Script will create collection of files with variables:
 # SWdown, LWdown, Tair, Qair, Precip, Wind, CO2air, VegType,
 
-source(synthmet_createvars.R) # contains variable creation functions
+source('synthmet_createvars.R') # contains variable creation functions
 projectname = 'PLUMBER2' # prefix on created filenames
 
 tstepsize = 1800 # in seconds; must be < 3 hourly
 nyears = 4 # year length of each forcing file
-SWdown_switch = c(200,1200) # low or high daily max value, also determines Prength
+SWdown_switch = c(200,1200) # low or high daily max value, also determines daylength (max 1200)
 Rainf_switch = c('regular','drizzle','heavy','drydown')
 LWdown_switch = c(1.2,0.8) # high or low multiplier of LWdown from Tair,Qair
 Tair_switch = list(c(260),c(285),c(313),c(260,285),c(285,260),c(285,313))
@@ -25,6 +25,9 @@ tsteps = nyears*365*(24*3600)/tstepsize
 
 SWdown = create_SWdown(SWdown_switch,tstepsize,tsteps)
 
+
+
+stop()
 SPINUP?
 
 # Build index array to send to apply/parApply writing of files:
