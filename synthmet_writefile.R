@@ -32,7 +32,7 @@ write_synthmet = function(index,tstepsize,tsteps,LWdown_switch,Qair_switch,
       veglabel='Vt'
     }
 
-    filename = paste0('synth_data/SynthMet',SWdown$lab[index[1]],Precip$lab[index[2]],LWdown$lab,
+    filename = paste0('../synth_data/SynthMet',SWdown$lab[index[1]],Precip$lab[index[2]],LWdown$lab,
       Tair$lab[index[4]],Qair$lab,CO2air$lab[index[6]],Wind$lab[index[7]],
       veglabel,'.nc')
 
