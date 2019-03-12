@@ -18,6 +18,7 @@ write_synthmet = function(index,tstepsize,tsteps,LWdown_switch,Qair_switch,
     Snowf = list(dat = ifelse(Tair$dat[index[4],]<=273.15,Precip$dat[index[2],],0),
       att = Precip$att[index[2]])
 
+
     # Determine properties dependent on vegetation type:
     if(VegType_switch[index[8]]=='grass'){
       canopyheight = 0.5
@@ -50,6 +51,7 @@ write_synthmet = function(index,tstepsize,tsteps,LWdown_switch,Qair_switch,
     write_synthmet_var(ncid,'SWdown',SWdown$att[index[1]],SWdown$dat[index[1],])
     write_synthmet_var(ncid,'Rainf',Rainf$att,Rainf$dat)
     write_synthmet_var(ncid,'Snowf',Snowf$att,Snowf$dat)
+    write_synthmet_var(ncid,'Precip',Precip$att[index[2]],Precip$dat[index[2],])
     write_synthmet_var(ncid,'LWdown',LWdown$att,LWdown$dat)
     write_synthmet_var(ncid,'Tair',Tair$att[index[4]],Tair$dat[index[4],])
     write_synthmet_var(ncid,'Qair',Qair$att,Qair$dat)
@@ -122,9 +124,15 @@ synthmet_definevars = function(tsteps,tstepsize){
   # Define Tair variable:
   Tair=ncvar_def('Tair','K', dim=list(xd,yd,zd,td),
     missval=missing_value,longname='Near surface air temperature')
+  # Define Precip variable:
+  Precip=ncvar_def('Precip','kg/m^2/s', dim=list(xd,yd,td),
+    missval=missing_value,longname='Precipitation rate')
   # Define Rainf variable:
   Rainf=ncvar_def('Rainf','kg/m^2/s', dim=list(xd,yd,td),
     missval=missing_value,longname='Rainfall rate')
+  # Define Snowf variable:
+  Snowf=ncvar_def('Snowf','kg/m^2/s', dim=list(xd,yd,td),
+    missval=missing_value,longname='Snowfall rate')
   # Define Qair variable:
   Qair=ncvar_def('Qair','kg/kg', dim=list(xd,yd,zd,td),
     missval=missing_value,longname='Near surface specific humidity')
@@ -137,16 +145,13 @@ synthmet_definevars = function(tsteps,tstepsize){
   # Define LWdown variable:
   LWdown=ncvar_def('LWdown','W/m^2', dim=list(xd,yd,td),
     missval=missing_value,longname='Surface incident longwave radiation')
-  # Define Snowf variable:
-  Snowf=ncvar_def('Snowf','kg/m^2/s', dim=list(xd,yd,td),
-    missval=missing_value,longname='Snowfall rate')
   # Define CO2air variable:
   CO2air=ncvar_def('CO2air','ppmv', dim=list(xd,yd,zd,td),
     missval=missing_value,longname='Near surface CO2 concentration')
 
   metncvars = list(lat=lat,lon=lon,
     SWdown=SWdown,LWdown=LWdown,Tair=Tair,Rainf=Rainf,Snowf=Snowf,Qair=Qair,
-    Wind=Wind,PSurf=PSurf,CO2air=CO2air,elev=elev,refheight=refheight,
+    Wind=Wind,PSurf=PSurf,CO2air=CO2air,Precip=Precip,elev=elev,refheight=refheight,
     canheight=canheight,timeoffset=timeoffset)
   return(metncvars)
 }
