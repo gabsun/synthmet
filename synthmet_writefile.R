@@ -123,7 +123,7 @@ synthmet_definevars = function(tsteps,tstepsize){
   Tair=ncvar_def('Tair','K', dim=list(xd,yd,zd,td),
     missval=missing_value,longname='Near surface air temperature')
   # Define Rainf variable:
-  Rainf=ncvar_def('Rainf','mm/s', dim=list(xd,yd,td),
+  Rainf=ncvar_def('Rainf','kg/m^2/s', dim=list(xd,yd,td),
     missval=missing_value,longname='Rainfall rate')
   # Define Qair variable:
   Qair=ncvar_def('Qair','kg/kg', dim=list(xd,yd,zd,td),
@@ -138,7 +138,7 @@ synthmet_definevars = function(tsteps,tstepsize){
   LWdown=ncvar_def('LWdown','W/m^2', dim=list(xd,yd,td),
     missval=missing_value,longname='Surface incident longwave radiation')
   # Define Snowf variable:
-  Snowf=ncvar_def('Snowf','mm/s liq water equivalent', dim=list(xd,yd,td),
+  Snowf=ncvar_def('Snowf','kg/m^2/s', dim=list(xd,yd,td),
     missval=missing_value,longname='Snowfall rate')
   # Define CO2air variable:
   CO2air=ncvar_def('CO2air','ppmv', dim=list(xd,yd,zd,td),
