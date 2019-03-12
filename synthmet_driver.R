@@ -68,7 +68,7 @@ for(SW in 1:length(SWdown_switch)){
   }
 }
 # Make virtual cluster
-cl = makeCluster(getOption('cl.cores', detectCores()))
+cl = makeCluster(getOption('cl.cores', 12))
 
 # Now create and write files through apply/parApply:
 err = parApply(cl=cl,indexarray,MARGIN=c(2,3,4,5,6,7,8,9),write_synthmet,tstepsize,tsteps,
