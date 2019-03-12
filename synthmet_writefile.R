@@ -79,6 +79,8 @@ synthmet_createfile = function(filename,var_defs,vegtype){
     attval='PLUMBER2_synthetic_forcing_data')
   ncatt_put(ncid,varid=0,attname='Source_code_repository',
     attval='github.com/gabsun/synthmet')
+  ncatt_put(ncid,varid=0,attname='Git_revision',
+    attval=system('git rev-parse HEAD',intern=TRUE))
   ncatt_put(ncid,varid=0,attname='Contact',
     attval='Gab_Abramwoitz_gabriel@unsw.edu.au')
   # Write variable attributes for CF and CMIP compliance:
