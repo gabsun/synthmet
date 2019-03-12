@@ -30,7 +30,7 @@ Tair = create_Tair(Tair_switch,tstepsize,tsteps)
 CO2air = create_CO2air(CO2air_switch,tsteps)
 Wind = create_Wind(Wind_switch,tsteps)
 Precip = create_Precip(Precip_switch,tstepsize,tsteps)
-PSurf = create_PSurf(tsteps)
+Psurf = create_Psurf(tsteps)
 
 #par(mfcol=c(4,2),mar=c(3,4,3,0.5),oma=c(0,0,0,1),
 #  mgp=c(2.5,0.7,0),ps=16,tcl=-0.4)
@@ -72,9 +72,9 @@ cl = makeCluster(getOption('cl.cores', detectCores()))
 
 # Now create and write files through apply/parApply:
 err = parApply(cl=cl,indexarray,MARGIN=c(2,3,4,5,6,7,8,9),write_synthmet,tstepsize,tsteps,
-  LWdown_switch,Qair_switch,VegType_switch,SWdown,Tair,CO2air,Wind,Precip,PSurf)
+  LWdown_switch,Qair_switch,VegType_switch,SWdown,Tair,CO2air,Wind,Precip,Psurf)
 #err = apply(indexarray,MARGIN=c(2,3,4,5,6,7,8),write_synthmet,tstepsize,tsteps,
-#  LWdown_switch,Qair_switch,VegType_switch,SWdown,Tair,CO2air,Wind,Precip,PSurf)
+#  LWdown_switch,Qair_switch,VegType_switch,SWdown,Tair,CO2air,Wind,Precip,Psurf)
 
 # stop cluster
 stopCluster(cl)

@@ -3,14 +3,14 @@
 # Gab Abramowitz gabsun at gmail dot com 2019
 #
 
-Rel2SpecHum = function(relHum,tk,PSurf){
+Rel2SpecHum = function(relHum,tk,Psurf){
 	# Converts relative humidity to specific humidity.
-	# tk - T in Kelvin; PSurf in Pa; relHum as %
+	# tk - T in Kelvin; Psurf in Pa; relHum as %
 	tempC = tk - 273.15
 	# Sat vapour pressure in Pa
 	esat = 610.78*exp( 17.27*tempC / (tempC + 237.3) )
 	# Then specific humidity at saturation:
-	ws = 0.622*esat/(PSurf - esat)
+	ws = 0.622*esat/(Psurf - esat)
 	# Then specific humidity:
 	specHum = (relHum/100) * ws
 	return(specHum)
@@ -30,9 +30,9 @@ create_LWdown = function(LWdown_multiplier,RH_const,Tair){
   return(returnvals)
 }
 
-create_Qair = function(RH_const,Tair,PSurf){
-  # Convert RH to specific H, using T and PSurf:
-  Qair = Rel2SpecHum(RH_const,Tair,PSurf)
+create_Qair = function(RH_const,Tair,Psurf){
+  # Convert RH to specific H, using T and Psurf:
+  Qair = Rel2SpecHum(RH_const,Tair,Psurf)
   att_text = paste('Fixed relative humidity of',RH_const,
     'expressed as specific humidity.',sep=' ')
   label = paste0('Q',RH_const)
@@ -240,13 +240,13 @@ create_CO2air = function(CO2air_switch,tsteps){
   return(returnvals)
 }
 
-create_PSurf = function(tsteps){
+create_Psurf = function(tsteps){
 
-  PSurf = rep(100000,times=tsteps)
-  att_text = 'Fixed PSurf at 100kPa'
+  Psurf = rep(100000,times=tsteps)
+  att_text = 'Fixed Psurf at 100kPa'
   label = ''
   units = 'Pa'
-  returnvals = list(dat=PSurf,lab=label,att=att_text,units=units)
+  returnvals = list(dat=Psurf,lab=label,att=att_text,units=units)
 
   return(returnvals)
 }

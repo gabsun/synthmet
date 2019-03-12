@@ -4,14 +4,14 @@
 #
 
 write_synthmet = function(index,tstepsize,tsteps,LWdown_switch,Qair_switch,
-  VegType_switch,SWdown,Tair,CO2air,Wind,Precip,PSurf){
+  VegType_switch,SWdown,Tair,CO2air,Wind,Precip,Psurf){
     source('synthmet_createvars.R') # contains variable creation functions
     source('synthmet_writefile.R') # contains variable creation functions
     err=FALSE
     # Synthesize LWdown and Qair based on Tair and relative humidity:
     LWdown = create_LWdown(LWdown_switch[index[3]],Qair_switch[index[5]],
         Tair$dat[index[4],])
-    Qair = create_Qair(Qair_switch[index[5]],Tair$dat[index[4],],PSurf$dat)
+    Qair = create_Qair(Qair_switch[index[5]],Tair$dat[index[4],],Psurf$dat)
     # Divide precip between rainfall and snowfall:
     Rainf = list(dat = ifelse(Tair$dat[index[4],]>273.15,Precip$dat[index[2],],0),
       att=Precip$att[index[2]])
@@ -81,6 +81,30 @@ synthmet_createfile = function(filename,var_defs,vegtype){
     attval='github.com/gabsun/synthmet')
   ncatt_put(ncid,varid=0,attname='Contact',
     attval='Gab_Abramwoitz_gabriel@unsw.edu.au')
+  # Write variable attributes for CF and CMIP compliance:
+  ncatt_put(ncid,'SWdown',attname='Standard_name',
+    attval='surface_downwelling_shortwave_flux_in_air')
+  ncatt_put(ncid,'SWdown',attname='CMIP_short_name',attval='rsds')
+  ncatt_put(ncid,'Tair',attname='Standard_name',attval='air_temperature')
+  ncatt_put(ncid,'Tair',attname='CMIP_short_name',attval='tas')
+  ncatt_put(ncid,'LWdown',attname='Standard_name',
+    attval='surface_downwelling_longwave_flux_in_air')
+  ncatt_put(ncid,'LWdown',attname='CMIP_short_name',attval='rlds')
+  ncatt_put(ncid,'Qair',attname='Standard_name',attval='specific_humidity')
+  ncatt_put(ncid,'Qair',attname='CMIP_short_name',attval='huss')
+  ncatt_put(ncid,'Psurf',attname='Standard_name',
+    attval='surface_air_pressure')
+  ncatt_put(ncid,'Psurf',attname='CMIP_short_name',attval='ps')
+  ncatt_put(ncid,'Precip',attname='Standard_name',attval='precipitation_flux')
+  ncatt_put(ncid,'Precip',attname='CMIP_short_name',attval='pr')
+  ncatt_put(ncid,'Rainf',attname='Standard_name',attval='rainfall_flux')
+  ncatt_put(ncid,'Rainf',attname='CMIP_short_name',attval='prr')
+  ncatt_put(ncid,'Snowf',attname='Standard_name',attval='snowfall_flux')
+  ncatt_put(ncid,'Snowf',attname='CMIP_short_name',attval='prsn')
+  ncatt_put(ncid,'Wind',attname='Standard_name',attval='wind_speed')
+  ncatt_put(ncid,'Wind',attname='CMIP_short_name',attval='ws')
+  ncatt_put(ncid,'CO2air',attname='Standard_name',attval='mole_fraction_of_carbon_dioxide_in_air')
+  ncatt_put(ncid,'CO2air',attname='CMIP_short_name',attval='co2c')
   return(ncid)
 }
 
@@ -139,8 +163,8 @@ synthmet_definevars = function(tsteps,tstepsize){
   # Define Wind variable:
   Wind=ncvar_def('Wind','m/s', dim=list(xd,yd,zd,td),
     missval=missing_value,longname='Scalar windspeed')
-  # Define PSurf variable:
-  PSurf=ncvar_def('PSurf','Pa', dim=list(xd,yd,td),
+  # Define Psurf variable:
+  Psurf=ncvar_def('Psurf','Pa', dim=list(xd,yd,td),
     missval=missing_value,longname='Surface air pressure')
   # Define LWdown variable:
   LWdown=ncvar_def('LWdown','W/m^2', dim=list(xd,yd,td),
@@ -151,7 +175,7 @@ synthmet_definevars = function(tsteps,tstepsize){
 
   metncvars = list(lat=lat,lon=lon,
     SWdown=SWdown,LWdown=LWdown,Tair=Tair,Rainf=Rainf,Snowf=Snowf,Qair=Qair,
-    Wind=Wind,PSurf=PSurf,CO2air=CO2air,Precip=Precip,elev=elev,refheight=refheight,
+    Wind=Wind,Psurf=Psurf,CO2air=CO2air,Precip=Precip,elev=elev,refheight=refheight,
     canheight=canheight,timeoffset=timeoffset)
   return(metncvars)
 }
