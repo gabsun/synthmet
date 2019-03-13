@@ -78,8 +78,6 @@ synthmet_createfile = function(filename,var_defs,vegtype){
   ncid = nc_create(filename,vars=var_defs)
   # Write global attributes:
   ncatt_put(ncid,varid=0,attname='IGBP_vegetation_type',attval=vegtype)
-  ncatt_put(ncid,varid=0,attname='Production_time',
-    attval=as.character(Sys.time()))
   ncatt_put(ncid,varid=0,attname='Production_source',
     attval='PLUMBER2_synthetic_forcing_data')
   ncatt_put(ncid,varid=0,attname='Source_code_repository',
@@ -88,6 +86,12 @@ synthmet_createfile = function(filename,var_defs,vegtype){
     attval=system('git rev-parse HEAD',intern=TRUE))
   ncatt_put(ncid,varid=0,attname='Contact',
     attval='Gab_Abramwoitz_gabriel@unsw.edu.au')
+  ncatt_put(ncid,varid=0,attname='Production_time',
+    attval=as.character(Sys.time()))
+  ncatt_put(ncid,varid=0,attname='Machine',
+    attval=system('hostname',intern=TRUE))
+  ncatt_put(ncid,varid=0,attname='OS',
+    attval=system('uname',intern=TRUE))  
   # Write variable attributes for CF and CMIP compliance:
   ncatt_put(ncid,'SWdown',attname='Standard_name',
     attval='surface_downwelling_shortwave_flux_in_air')
