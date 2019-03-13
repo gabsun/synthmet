@@ -41,6 +41,67 @@ create_Qair = function(RH_const,Tair,Psurf){
   return(returnvals)
 }
 
+create_LAI = function(LAItype,LAIvals,tstepsize,tsteps){
+  # Creates synthetic LAI time series
+	LAI=c()
+  if(length(LAIvals) == 1){ # i.e. constant LAI
+    LAI[1:tsteps] = LAIvals[1] # entire time series this LAI
+    att_text = paste('Fixed LAI at',LAIvals[1],sep=' ')
+    label = paste0('LAI',LAIvals[1])
+  }else if( (LAItype == 'sine') & (length(LAIvals) == 2) & (any(LAIvals==0)) ){
+		# LAI with flat zero period over dry/winter
+		tsinyear = 365*24*3600 / tstepsize # time steps in a year
+		# First calculate number of timesteps of non-zero LAI
+    greensteps = tsinyear / 2
+    # Now construct sine wave for green time steps:
+    tssize_rad = (2*pi) / greensteps # time step size, in radians
+    onegreencycle = max(LAIvals) / 2 * (sin((c(1:greensteps) * tssize_rad + pi/2))+1)
+    # Determine number of timesteps between green periods
+    halfyear = c(1:(tsinyear/2))
+    # Construct a 24 hour cycle:
+    LAIoneyear = c(onegreencycle[1:(greensteps/2)],halfyear*0,
+			onegreencycle[(greensteps/2+1):greensteps])
+    nyears = tsteps / tsinyear # number of years
+    # Repeat daily cycle for whole timeseries
+    LAI = rep(LAIoneyear,times=nyears)
+    att_text = paste('Sinusoidally varying for 6 month growing season,',
+      'maximum value',max(LAIvals),sep=' ')
+    label = paste0('LAISi',paste(LAIvals,collapse=''))
+	}else if( (LAItype == 'sine') & (length(LAIvals) == 2) ){
+    # Sinusoidally varying LAI seasonally with min/max value given:
+    tsinyear = 365*24*3600 / tstepsize # time steps in a year
+    tssize_rad = (2*pi) / tsinyear # time step size, in radians
+    sineheight = abs(LAIvals[2]-LAIvals[1])
+    # multiply [0,2] sine curve by sineheight/2, and add low temp offset:
+    LAI = (sineheight / 2)*(sin((c(1:tsteps) * tssize_rad + pi/2))+1) + min(LAIvals)
+    att_text = paste('Sinusoidally varying between',
+      LAIvals[1],'and',LAIvals[2],sep=' ')
+    label = paste0('LAISi',paste(LAIvals,collapse=''))
+  }else if( (LAItype == 'step') & (length(LAIvals) == 2) ){
+    step_length = ceiling(tsteps / length(LAIvals))
+    LAI[1:step_length] = LAIvals[1] # first LAI value
+    LAI[(step_length+1):tsteps] = LAIvals[2] # 2nd LAI value
+    att_text = paste('Step changes between',LAIvals[1],'and',LAIvals[2],sep=' ')
+    label = paste0('LAISt',paste(LAIvals,collapse=''))
+  }else if((LAItype == 'step')&  (length(LAIvals) > 2)){
+    step_length = ceiling( tsteps / length(length(LAIvals)) )
+    LAI[1:step_length] = LAIvals[1] # first LAI value
+    for(l in 2:( length(LAIvals) - 1 ) ){
+      LAI[((step_length*(l-1))+1):(step_length*l)] = LAIvals[l]
+    }
+    l = length(LAIvals)
+    LAI[((step_length*(l-1))+1):tsteps] = LAIvals[l]
+    att_text = paste('Step changes of',paste(LAIvals,collapse=' '),sep=' ')
+    label = paste0('LAISt',paste(LAIvals,collapse=''))
+  }else{
+		cat(LAItype,' ',LAIvals,'\n')
+    stop('Don\'t know what to do with 3+ dimensional LAI speification.')
+  }
+  units = '-'
+  returnvals = list(dat=LAI,lab=label,att=att_text,units=units)
+  return(returnvals)
+}
+
 create_SWdown = function(SWdown_switch,tstepsize,tsteps){
   # Creates synthetic SWdown time series
   tsinday = 24*3600 / tstepsize # time steps in a day

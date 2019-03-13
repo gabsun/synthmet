@@ -21,7 +21,8 @@ Tair_switch = list(values=list(c(260,293),c(303,318),c(260,293,260),c(293,313,29
 Qair_switch = c(5,98) # high or low based on Tair
 CO2air_switch = c(350,550)
 Wind_switch = list(c(0),c(2),c(20),c(0,2,10,20))
-VegType_switch = c('tree','grass') # determines veg and reference height too
+VegType_switch = list(vtype=c('tree','grass'),type=c('sine','step','step'),
+  values=list(c(0,3),c(1),c(6))) # determines lai, veg height and reference height
 
 tsteps = nyears*365*(24*3600)/tstepsize # note no leaps years!
 
@@ -50,7 +51,7 @@ for(SW in 1:length(SWdown_switch)){
         for(Qa in 1:length(Qair_switch)){
           for(CO2 in 1:length(CO2air_switch)){
             for(W in 1:length(Wind_switch)){
-              for(Veg in 1:length(VegType_switch)){
+              for(Veg in 1:length(VegType_switch$values)){
                 indexarray[1,SW,Pr,LW,Ta,Qa,CO2,W,Veg] = SW # index values for SWdown
                 indexarray[2,SW,Pr,LW,Ta,Qa,CO2,W,Veg] = Pr # index values for Prength
                 indexarray[3,SW,Pr,LW,Ta,Qa,CO2,W,Veg] = LW # index values for LWdown
@@ -68,7 +69,7 @@ for(SW in 1:length(SWdown_switch)){
   }
 }
 # Make virtual cluster
-cl = makeCluster(getOption('cl.cores', 22))
+cl = makeCluster(getOption('cl.cores', 16))
 
 # Now create and write files through apply/parApply:
 err = parApply(cl=cl,indexarray,MARGIN=c(2,3,4,5,6,7,8,9),write_synthmet,tstepsize,tsteps,

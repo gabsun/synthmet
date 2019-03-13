@@ -20,20 +20,24 @@ write_synthmet = function(index,tstepsize,tsteps,LWdown_switch,Qair_switch,
 
 
     # Determine properties dependent on vegetation type:
-    if(VegType_switch[index[8]]=='grass'){
+    if(VegType_switch$vtype[index[8]]=='grass'){
       canopyheight = 0.5
       referenceheight = 2
       vegtype='Grassland'
-      veglabel='Vg'
-    }else if(VegType_switch[index[8]]=='tree'){
+      LAI = create_LAI(VegType_switch$type[index[8]],
+        VegType_switch$values[[index[8]]],tstepsize,tsteps)
+      veglabel=paste0('Vg',LAI$lab)
+    }else if(VegType_switch$vtype[index[8]]=='tree'){
       canopyheight = 20
       referenceheight = 25
       vegtype = 'Evergreen_broadleaf'
-      veglabel='Vt'
+      LAI = create_LAI(VegType_switch$type[index[8]],
+        VegType_switch$values[[index[8]]],tstepsize,tsteps)
+      veglabel=paste0('Vt',LAI$lab)
     }
 
-    filename = paste0('../synth_data/SynthMet',SWdown$lab[index[1]],Precip$lab[index[2]],LWdown$lab,
-      Tair$lab[index[4]],Qair$lab,CO2air$lab[index[6]],Wind$lab[index[7]],
+    filename = paste0('../synth_data/SynthMet',SWdown$lab[index[1]],Precip$lab[index[2]],
+      LWdown$lab,Tair$lab[index[4]],Qair$lab,CO2air$lab[index[6]],Wind$lab[index[7]],
       veglabel,'.nc')
 
     # Define variables:
@@ -57,6 +61,7 @@ write_synthmet = function(index,tstepsize,tsteps,LWdown_switch,Qair_switch,
     write_synthmet_var(ncid,'Qair',Qair$att,Qair$dat)
     write_synthmet_var(ncid,'CO2air',CO2air$att[index[6]],CO2air$dat[index[6],])
     write_synthmet_var(ncid,'Wind',Wind$att[index[7]],Wind$dat[index[7],])
+    write_synthmet_var(ncid,'LAI',LAI$att,LAI$dat)
     # Close netcdf file
     nc_close(ncid)
 
@@ -107,6 +112,8 @@ synthmet_createfile = function(filename,var_defs,vegtype){
   ncatt_put(ncid,'Wind',attname='CMIP_short_name',attval='ws')
   ncatt_put(ncid,'CO2air',attname='Standard_name',attval='mole_fraction_of_carbon_dioxide_in_air')
   ncatt_put(ncid,'CO2air',attname='CMIP_short_name',attval='co2c')
+  ncatt_put(ncid,'LAI',attname='Standard_name',attval='leaf_area_index')
+  ncatt_put(ncid,'LAI',attname='CMIP_short_name',attval='lai')
   return(ncid)
 }
 
@@ -148,7 +155,7 @@ synthmet_definevars = function(tsteps,tstepsize){
   SWdown=ncvar_def('SWdown','W/m^2', dim=list(xd,yd,td),
     missval=missing_value,longname='Surface incident shortwave radiation')
   # Define Tair variable:
-  Tair=ncvar_def('Tair','K', dim=list(xd,yd,zd,td),
+  Tair=ncvar_def('Tair','K', dim=list(xd,yd,td),
     missval=missing_value,longname='Near surface air temperature')
   # Define Precip variable:
   Precip=ncvar_def('Precip','kg/m^2/s', dim=list(xd,yd,td),
@@ -160,10 +167,10 @@ synthmet_definevars = function(tsteps,tstepsize){
   Snowf=ncvar_def('Snowf','kg/m^2/s', dim=list(xd,yd,td),
     missval=missing_value,longname='Snowfall rate')
   # Define Qair variable:
-  Qair=ncvar_def('Qair','kg/kg', dim=list(xd,yd,zd,td),
+  Qair=ncvar_def('Qair','kg/kg', dim=list(xd,yd,td),
     missval=missing_value,longname='Near surface specific humidity')
   # Define Wind variable:
-  Wind=ncvar_def('Wind','m/s', dim=list(xd,yd,zd,td),
+  Wind=ncvar_def('Wind','m/s', dim=list(xd,yd,td),
     missval=missing_value,longname='Scalar windspeed')
   # Define Psurf variable:
   Psurf=ncvar_def('Psurf','Pa', dim=list(xd,yd,td),
@@ -172,12 +179,15 @@ synthmet_definevars = function(tsteps,tstepsize){
   LWdown=ncvar_def('LWdown','W/m^2', dim=list(xd,yd,td),
     missval=missing_value,longname='Surface incident longwave radiation')
   # Define CO2air variable:
-  CO2air=ncvar_def('CO2air','ppmv', dim=list(xd,yd,zd,td),
+  CO2air=ncvar_def('CO2air','ppmv', dim=list(xd,yd,td),
     missval=missing_value,longname='Near surface CO2 concentration')
+  # Define CO2air variable:
+  LAI=ncvar_def('LAI','-', dim=list(xd,yd,td),
+    missval=missing_value,longname='Leaf area index')
 
   metncvars = list(lat=lat,lon=lon,
     SWdown=SWdown,LWdown=LWdown,Tair=Tair,Rainf=Rainf,Snowf=Snowf,Qair=Qair,
-    Wind=Wind,Psurf=Psurf,CO2air=CO2air,Precip=Precip,elev=elev,refheight=refheight,
-    canheight=canheight,timeoffset=timeoffset)
+    Wind=Wind,Psurf=Psurf,CO2air=CO2air,Precip=Precip,LAI=LAI,elev=elev,
+    refheight=refheight,canheight=canheight,timeoffset=timeoffset)
   return(metncvars)
 }
