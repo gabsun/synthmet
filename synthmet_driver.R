@@ -21,7 +21,7 @@ Tair_switch = list(values=list(c(260,293),c(303,318),c(260,293,260),c(293,313,29
 Qair_switch = c(5,98) # high or low based on Tair
 CO2air_switch = c(350,550)
 Wind_switch = list(c(0),c(2),c(20),c(0,2,10,20))
-VegType_switch = list(vtype=c('tree','grass'),type=c('sine','step','step'),
+VegType_switch = list(vtype=c('grass','tree','tree'),type=c('sine','step','step'),
   values=list(c(0,3),c(1),c(6))) # determines lai, veg height and reference height
 
 tsteps = nyears*365*(24*3600)/tstepsize # note no leaps years!
