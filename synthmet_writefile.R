@@ -59,6 +59,7 @@ write_synthmet = function(index,tstepsize,tsteps,LWdown_switch,Qair_switch,
     write_synthmet_var(ncid,'LWdown',LWdown$att,LWdown$dat)
     write_synthmet_var(ncid,'Tair',Tair$att[index[4]],Tair$dat[index[4],])
     write_synthmet_var(ncid,'Qair',Qair$att,Qair$dat)
+    write_synthmet_var(ncid,'Psurf',Psurf$att,Psurf$dat)
     write_synthmet_var(ncid,'CO2air',CO2air$att[index[6]],CO2air$dat[index[6],])
     write_synthmet_var(ncid,'Wind',Wind$att[index[7]],Wind$dat[index[7],])
     write_synthmet_var(ncid,'LAI',LAI$att,LAI$dat)
@@ -91,7 +92,7 @@ synthmet_createfile = function(filename,var_defs,vegtype){
   ncatt_put(ncid,varid=0,attname='Machine',
     attval=system('hostname',intern=TRUE))
   ncatt_put(ncid,varid=0,attname='OS',
-    attval=system('uname',intern=TRUE))  
+    attval=system('uname',intern=TRUE))
   # Write variable attributes for CF and CMIP compliance:
   ncatt_put(ncid,'SWdown',attname='Standard_name',
     attval='surface_downwelling_shortwave_flux_in_air')

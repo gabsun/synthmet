@@ -24,7 +24,7 @@ create_LWdown = function(LWdown_multiplier,RH_const,Tair){
   LWdown = LWdown*LWdown_multiplier
   att_text = paste('Linear synthesis following Abramowitz et al (2012) with',
     'multiplier of',LWdown_multiplier,sep=' ')
-  label = paste0('L',LWdown_multiplier)
+  label = paste0('L',floor(10*LWdown_multiplier))
   units = 'W/m^2'
   returnvals = list(dat=LWdown,lab=label,att=att_text,units=units)
   return(returnvals)
